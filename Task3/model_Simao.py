@@ -1,13 +1,10 @@
-import pandas as pd
 import numpy as np
 import csv 
-from UtilityFunctions import ReadData_int, WriteData, ReadData_char
-from sklearn.model_selection import train_test_split
+from UtilityFunctions import ReadData_char
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import f1_score
 
 
 train_features, train_labels, test_features = ReadData_char()
@@ -32,7 +29,7 @@ def neuralNet():
     X_train_trsf = std_scaler.transform(train_enc)
     X_test_trsf = std_scaler.transform(test_enc)
 
-    mlpclass = MLPClassifier(hidden_layer_sizes=(100, 100), max_iter=120, verbose=10, solver='adam', alpha=0.0001, batch_size='auto')
+    mlpclass = MLPClassifier(hidden_layer_sizes=(1000), verbose=10, max_iter=120, tol=0.00001, alpha=0.000001, batch_size='auto', random_state=10)
 
     mlpclass.fit(X_train_trsf, train_labels)
 
