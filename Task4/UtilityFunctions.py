@@ -9,10 +9,8 @@ Created on Thu May 21 17:08:20 2020
 """
 
 import os 
-import glob
 import pathlib
 import numpy as np
-from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.preprocessing.image import img_to_array
