@@ -3,9 +3,18 @@ import random
 import copy
 
 
-def split_training(_array, _val_array_size):
+def split_training():
 
-    array = copy.deepcopy(_array)
+    with open('train_triplets.txt', 'r') as f:
+        _data = f.readlines()
+    data = []
+    for elem in _data:
+        data.append(elem.rstrip().split(' '))
+  
+    
+    _val_array_size = len(data) //10
+    
+    array = copy.deepcopy(data)
 
     random.shuffle(array)
 
@@ -20,7 +29,7 @@ def split_training(_array, _val_array_size):
 
     while True:
         n += 1
-        print(f'iteration: {n:6d} len(array) = {len(array):6d} len(val) = {len(_val_set):6d} len(buf) = {len(elem_buffer):4d}')
+        #print(f'iteration: {n:6d} len(array) = {len(array):6d} len(val) = {len(_val_set):6d} len(buf) = {len(elem_buffer):4d}')
 
         if len(_val_set) >= _val_array_size:
             break
@@ -48,20 +57,3 @@ def split_training(_array, _val_array_size):
 
 
 
-
-
-
-if __name__ == '__main__':
-
-    random.seed(12341)
-
-    with open('train_triplets.txt', 'r') as f:
-        _data = f.readlines()
-    data = []
-    for elem in _data:
-        data.append(elem.rstrip().split(' '))
-    
-    print(data[:5])
-    train_set, val_set, unused = split_training(data, len(data) //10)
-
-    print(f'trainset length = {len(train_set)}; validation length = {len(val_set)}; unused = {len(unused)}')
