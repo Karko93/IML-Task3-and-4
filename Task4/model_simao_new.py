@@ -14,10 +14,10 @@ import torch.backends.cudnn as cudnn
 from google.colab import drive
 import time
 import datetime
-
+ 
 #load triplets 
 train_triplets = np.loadtxt('train_triplets.txt', dtype= 'str')
-test_triplets = np.loadtxt('test_triplets.txt', dtype= 'str')
+test_triplets = np.loadtxt('/test_triplets.txt', dtype= 'str')
 print(test_triplets.shape)
 print(train_triplets.shape)
 
@@ -78,15 +78,15 @@ train_dataset = ImageTriplesSet(train_triplets, train_dir, transform = data_tran
 val_dataset = ImageTriplesSet(val_triplets, train_dir, transform= data_transform, labels = None)
 test_dataset = ImageTriplesSet(test_triplets, train_dir, mode="test" ,transform = data_transform,labels = None)
 
-model = torch.hub.load('pytorch/vision', 'resnet34', pretrained=False)
+model = torch.hub.load('pytorch/vision', 'vgg16', pretrained=True)
 
-learning_rate = 0.05
-batch_size = 64
+learning_rate = 0.0001
+batch_size = 32
 epochs = 3
 logstep = int(1000 // batch_size)
 
 train_loader = datatorch.DataLoader(dataset=train_dataset, shuffle=False, batch_size=batch_size)
-model.fc = nn.Sequential(nn.Linear(model.fc.in_features,512), nn.Linear(512, 2048))
+#model.fc = nn.Sequential(nn.Linear(model.fc.in_features,512), nn.Linear(512, 2048))
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 criterion = nn.TripletMarginLoss(margin=1.0, p=2)
@@ -126,7 +126,7 @@ model.eval()
 for idx, (data1, data2, data3) in enumerate(val_loader):
     data1, data2, data3 = data1.cuda(), data2.cuda(), data3.cuda()
     embedded_1, embedded_2, embedded_3 = model(data1), model(data2), model(data3)
-    if torch.dist(embedded_1,embedded_3,2)>=torch.dist(embedded_1,embedded_2,2):
+    if torch.dist(embedded_1,embedded_3,1)>=torch.dist(embedded_1,embedded_2,1):
         val_labels_pred.append(1)
     else:
         val_labels_pred.append(0)
@@ -146,14 +146,14 @@ start = time.time()
 for idx, (data1, data2, data3) in enumerate(test_loader):
     data1, data2, data3 = data1.cuda(), data2.cuda(), data3.cuda()
     embedded_1, embedded_2, embedded_3 = model(data1), model(data2), model(data3)
-    if torch.dist(embedded_1,embedded_3,2)>=torch.dist(embedded_1,embedded_2,2):
+    if torch.dist(embedded_1,embedded_3,1)>=torch.dist(embedded_1,embedded_2,1):
         test_triplets_pred.append(str(1))
     else:
         test_triplets_pred.append(str(0))
 end = time.time()
 print(str(datetime.timedelta(seconds= end - start)))
 
-file_name = 'submission_Stefano5.txt'
+file_name = 'submission_Stefano30.txt'
 with open(file_name, 'w') as f:
     for item in test_triplets_pred:
         f.write(item + '\n')
